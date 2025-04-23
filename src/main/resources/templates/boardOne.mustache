@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>boardOne.mustache</title>
+</head>
+<body>
+	<h1>boardOne</h1>
+	<div>
+		{{board.bno}}<br>
+		{{board.title}}
+	</div>
+	
+	<div>
+		첨부파일 <br>
+		{{#fileList}}
+			<a href="/upload/{{fname}}.{{fext}}" download="{{foriginname}}">{{foriginname}}</a><br>
+		{{/fileList}}
+	</div>
+</body>
+</html>

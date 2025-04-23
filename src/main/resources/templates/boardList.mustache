@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>boardList.mustache</title>
+</head>
+<body>
+	<h1>boardList</h1>
+	<table border="1">
+		<tr>
+			<th>bno</th>
+			<th>title</th>
+		</tr>
+		{{#list}}
+			<tr>
+				<td>{{bno}}</td>
+				<td>
+					<a href="/boardOne?bno={{bno}}">{{title}}</a>
+				</td>
+			</tr>
+		{{/list}}
+	</table>
+</body>
+</html>
