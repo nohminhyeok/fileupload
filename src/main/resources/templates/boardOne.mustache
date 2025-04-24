@@ -6,15 +6,30 @@
 </head>
 <body>
 	<h1>boardOne</h1>
+	<!-- board 수정 -->
+	<!-- 
+		board 삭제 : 
+		1) 파일 삭제 
+		2)board 삭제
+	-->
 	<div>
 		{{board.bno}}<br>
 		{{board.title}}
 	</div>
-	
 	<div>
-		첨부파일 <br>
+		<a href="/updateBoardTitle?bno={{board.bno}}">[수정]</a>
+		<a href="/removeBoard?bno={{board.bno}}">[삭제]</a>
+	</div>
+	
+	<!-- 개별 파일 삭제 -->
+	<hr>
+	<div>
+		<h2>첨부파일</h2>
 		{{#fileList}}
-			<a href="/upload/{{fname}}.{{fext}}" download="{{foriginname}}">{{foriginname}}</a><br>
+		<div>
+			<a href="/upload/{{fname}}.{{fext}}" download="{{foriginname}}">{{foriginname}}</a>
+			<a href="/removeBoardfile?fno={{fno}}&bno={{bno}}">[파일삭제]</a>
+		</div>
 		{{/fileList}}
 	</div>
 </body>

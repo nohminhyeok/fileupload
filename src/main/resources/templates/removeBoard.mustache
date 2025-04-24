@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>removeBoard.mustache</title>
+</head>
+<body>
+	<h1>정말 삭제하겠습니까?</h1>
+	<form method="post" action="/removeBoard">
+		<input type="password" name="pw">
+		<input type="hidden" name="bno" value="{{bno}}">
+		<button type="submit">삭제</button>
+	</form>
+</body>
+</html>

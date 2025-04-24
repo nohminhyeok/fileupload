@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>update board title</title>
+</head>
+<body>
+	<h1>게시글 수정</h1>
+	<form method="post" action="/updateBoardTitle">
+	{{#Board}}
+		<input type="hidden" name="bno" value="{{bno}}">
+		<table border="1">
+			<tr>
+				<th>title</th>
+				<td>
+					<input type="text" name="title" value="{{title}}">
+				</td>
+			</tr>
+			<tr>
+				<th>pw</th>
+				<td>
+					<input type="password" name="pw">
+				</td>
+			</tr>
+		</table>
+	{{/Board}}
+		<button type="submit">수정</button>
+	</form>
+</body>
+</html>

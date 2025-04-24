@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>removeBoardfile.mustache</title>
+</head>
+<body>
+	<h1>파일을 삭제하시겠습니까?</h1>
+	{{#msg}}<p style="color:red">{{msg}}</p>{{/msg}}
+	<form method="post" action="/removeBoardfile">
+		<input type="password" name="pw">
+		<input type="hidden" name="bno" value="{{bno}}">
+		<input type="hidden" name="fno" value="{{fno}}">
+		<button type="submit">삭제</button>
+	</form>
+</body>
+</html>

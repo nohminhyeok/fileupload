@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -20,5 +21,8 @@ public class Board {
 	@Column(name = "pw")
 	private String pw;
 	
-	// Boardfile 관계설정 x
+	// 사용하지 않는 연관 관계 설정 주석처리
+	// Boardfile 관계설정 x Board에 설정하고 Boardfile에 단방향 처리 없애면 양방향
+	// @OneToMany(mappedBy = "board")
+	// private List<Boardfile> boardfiles = new ArrayList<>();	
 }
