@@ -2,10 +2,16 @@ package com.example.fileupload.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -105,26 +111,48 @@ public class BoardController {
 	@Autowired BoardfileRepository boardfileRepository;
 	
 	@GetMapping({"/","/boardList"})
-	public String boardList(Model model) {
+	public String boardList(Model model
+							,@RequestParam (value="currentPage", defaultValue = "0") int currentPage
+							,@RequestParam (value="rowPerPage", defaultValue ="6") int rowPerPage
+							,@RequestParam (value="word", defaultValue = "") String word) {
 		// 페이징
 		// Sort : bno DESC
 		// pageRequest 0, 10
 		// page<BoardMapping>
-		List<BoardMapping> list = boardRepository.findAllBy();
+		Sort sort = Sort.by("bno").descending();
+		PageRequest pageable = PageRequest.of(currentPage, rowPerPage, sort);
+		Page<Board> list = boardRepository.findByTitleContaining(word, pageable);
+		
 		model.addAttribute("list", list);
+		model.addAttribute("currentPage", list.getNumber()+1);
+		model.addAttribute("nextPage", list.getNumber()+1);
+		model.addAttribute("prePage", list.getNumber()-1);
+		model.addAttribute("word", word);
+		
 		return "boardList";
 	}
 	
 	@GetMapping("/boardOne")
-	public String boardOne(Model model, @RequestParam(value="bno") int bno) {
-		BoardMapping board = boardRepository.findByBno(bno); 
-		log.debug(board.toString());
-		List<Boardfile> fileList = boardfileRepository.findByBno(board.getBno());
-		log.debug("size : "+fileList.size());
-		
-		model.addAttribute("board", board);
-		model.addAttribute("fileList", fileList);
-		return "boardOne";
+	public String boardOne(Model model, @RequestParam(value = "bno") int bno) {
+	    BoardMapping board = boardRepository.findByBno(bno); 
+	    model.addAttribute("board", board);
+
+	    List<Boardfile> fileList = boardfileRepository.findByBno(board.getBno());
+
+	    List<Map<String, Object>> mappedFiles = fileList.stream().map(file -> {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("fno", file.getFno());
+	        map.put("bno", file.getBno());
+	        map.put("fname", file.getFname());
+	        map.put("fext", file.getFext());
+	        map.put("foriginname", file.getForiginname());
+	        map.put("isImage", List.of("jpg", "jpeg", "png", "gif", "webp").contains(file.getFext().toLowerCase()));
+	        return map;
+	    }).collect(Collectors.toList());
+
+	    model.addAttribute("fileList", mappedFiles);
+
+	    return "boardOne"; // boardOne.mustache 렌더링
 	}
 	
 	@GetMapping("/updateBoardTitle")
@@ -155,28 +183,38 @@ public class BoardController {
 		    return "redirect:/boardList";
 		}
 	
-	@GetMapping("removeBoard")
-	public String removeBoard(Board board, Model model, 
-								@RequestParam (value="bno") int bno) {
-		model.addAttribute("bno", bno);
-		boardRepository.findByBno(bno);
-		boardRepository.delete(board);
-		return "removeBoard";
+	@GetMapping("/removeBoard")
+	public String removeBoardForm(@RequestParam("bno") int bno, Model model) {
+	    model.addAttribute("bno", bno);
+	    return "removeBoard";  // 비밀번호 입력 폼 페이지
 	}
-	
-	@PostMapping("removeBoard")
-	public String removeBoardPw(@RequestParam (value="bno") int bno
-							  , @RequestParam (value="pw") String pw
-							  , RedirectAttributes rda) {
+
+	// 비밀번호 확인 후 삭제 수행하는 POST
+	@PostMapping("/removeBoard")
+	public String removeBoardPw(@RequestParam("bno") int bno,
+	                            @RequestParam("pw") String pw,
+	                            RedirectAttributes rda) {
+
 	    Board board = boardRepository.findById(bno).orElse(null);
 	    if (board == null) {
 	        rda.addFlashAttribute("msg", "존재하지 않는 게시글입니다.");
 	        return "redirect:/boardList";
 	    }
+
+	    // 비밀번호 확인
 	    if (!board.getPw().equals(pw)) {
 	        rda.addFlashAttribute("msg", "비밀번호가 틀렸습니다.");
-	        return "redirect:/removeBoard?bno=" + bno;
+	        return "redirect:/boardOne?bno=" + bno;
 	    }
+
+	    // 첨부파일 존재 여부 확인
+	    List<Boardfile> fileList = boardfileRepository.findByBno(bno);
+	    if (!fileList.isEmpty()) {
+	        rda.addFlashAttribute("msg", "첨부파일이 존재하여 게시글을 삭제할 수 없습니다.");
+	        return "redirect:/boardOne?bno=" + bno;
+	    }
+
+	    // 삭제 실행
 	    boardRepository.deleteById(bno);
 	    rda.addFlashAttribute("msg", "게시글이 삭제되었습니다.");
 	    return "redirect:/boardList";

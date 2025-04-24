@@ -1,36 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>boardOne.mustache</title>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f9f9f9;
+      --text-light: #1f1f1f;
+      --card-bg-light: #ffffff;
+      --highlight: #00b894;
+
+      --bg-dark: #2a2a2a;
+      --text-dark: #eeeeee;
+      --card-bg-dark: #3b3b3b;
+      --text-muted-dark: #cccccc;
+    }
+
+    * {
+      font-family: 'SUIT', sans-serif;
+    }
+
+    body[data-theme="light"] {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    body[data-theme="dark"] {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      background-color: var(--card-bg-light);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    body[data-theme="dark"] .container {
+      background-color: var(--card-bg-dark);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .file-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    body[data-theme="dark"] .file-block {
+      border-color: #444;
+    }
+
+    .file-block a {
+      text-decoration: none;
+    }
+
+    .file-block a:hover {
+      color: var(--highlight);
+    }
+
+    .btn-action {
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+
+    .msg {
+      color: red;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
-<body>
-	<h1>boardOne</h1>
-	<!-- board 수정 -->
-	<!-- 
-		board 삭제 : 
-		1) 파일 삭제 
-		2)board 삭제
-	-->
-	<div>
-		{{board.bno}}<br>
-		{{board.title}}
+<body data-theme="light">
+  <div class="container">
+    <h1>📄 게시글 상세</h1>
+
+    <div class="mb-3">
+      <div><strong>번호:</strong> {{board.bno}}</div>
+      <div><strong>제목:</strong> {{board.title}}</div>
+    </div>
+
+    {{#msg}}
+    <div class="msg">{{msg}}</div>
+    {{/msg}}
+
+	<div class="mb-4">
+		<a href="/updateBoardTitle?bno={{board.bno}}" class="btn btn-outline-secondary btn-sm">✏️ 수정</a>
+		<a href="/removeBoard?bno={{board.bno}}" class="btn btn-outline-danger btn-sm">🗑️ 삭제</a>
+		<a href="/boardList" class="btn btn-outline-primary btn-sm ms-2">📋 게시판으로</a> <!-- 추가 -->
 	</div>
-	<div>
-		<a href="/updateBoardTitle?bno={{board.bno}}">[수정]</a>
-		<a href="/removeBoard?bno={{board.bno}}">[삭제]</a>
-	</div>
-	
-	<!-- 개별 파일 삭제 -->
-	<hr>
-	<div>
-		<h2>첨부파일</h2>
+
+    <hr>
+    <h4>📎 첨부파일</h4>
 		{{#fileList}}
-		<div>
-			<a href="/upload/{{fname}}.{{fext}}" download="{{foriginname}}">{{foriginname}}</a>
-			<a href="/removeBoardfile?fno={{fno}}&bno={{bno}}">[파일삭제]</a>
-		</div>
+			<div class="file-item d-flex justify-content-between align-items-center p-3 rounded mb-2" style="background-color: rgba(255,255,255,0.05); max-width: 700px;">
+			  <div class="d-flex align-items-center gap-3">
+			    {{#isImage}}
+			      <img src="/upload/{{fname}}.{{fext}}" alt="{{foriginname}}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
+			    {{/isImage}}
+			    <a href="/upload/{{fname}}.{{fext}}" download="{{foriginname}}" class="text-decoration-none text-info">{{foriginname}}</a>
+			  </div>
+			  <a href="/removeBoardfile?fno={{fno}}&bno={{bno}}" class="btn btn-sm btn-outline-danger" style="min-width: 70px;">삭제</a>
+			</div>
 		{{/fileList}}
-	</div>
+
+    <hr>
+    <h4>📤 파일 추가하기</h4>
+    <form action="/uploadBoardfile" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="bno" value="{{board.bno}}">
+      <input type="file" name="files" class="form-control mb-2" multiple>
+      <button type="submit" class="btn btn-success">업로드</button>
+    </form>
+  </div>
+
+  <script>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+  </script>
 </body>
 </html>

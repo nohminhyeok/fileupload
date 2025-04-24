@@ -1,17 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>removeBoardfile.mustache</title>
+  <meta charset="UTF-8">
+  <title>파일 삭제</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f9f9f9;
+      --text-light: #1f1f1f;
+      --card-bg-light: #ffffff;
+
+      --bg-dark: #2a2a2a;
+      --text-dark: #eeeeee;
+      --card-bg-dark: #3b3b3b;
+    }
+
+    * {
+      font-family: 'SUIT', sans-serif;
+    }
+
+    body[data-theme="light"] {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    body[data-theme="dark"] {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 30px;
+      background-color: var(--card-bg-light);
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    body[data-theme="dark"] .container {
+      background-color: var(--card-bg-dark);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .msg {
+      color: red;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .btn-danger {
+      width: 100%;
+    }
+
+    input[type="password"] {
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
-<body>
-	<h1>파일을 삭제하시겠습니까?</h1>
-	{{#msg}}<p style="color:red">{{msg}}</p>{{/msg}}
-	<form method="post" action="/removeBoardfile">
-		<input type="password" name="pw">
-		<input type="hidden" name="bno" value="{{bno}}">
-		<input type="hidden" name="fno" value="{{fno}}">
-		<button type="submit">삭제</button>
-	</form>
+<body data-theme="light">
+  <div class="container">
+    <h1>🗑️ 파일을 삭제하시겠습니까?</h1>
+
+    {{#msg}}<div class="msg">{{msg}}</div>{{/msg}}
+
+    <form method="post" action="/removeBoardfile">
+      <input type="password" name="pw" class="form-control" placeholder="비밀번호 입력" required>
+      <input type="hidden" name="bno" value="{{bno}}">
+      <input type="hidden" name="fno" value="{{fno}}">
+      <button type="submit" class="btn btn-danger mt-2">삭제</button>
+    </form>
+  </div>
+
+  <script>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+  </script>
 </body>
 </html>
